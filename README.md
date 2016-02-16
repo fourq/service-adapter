@@ -51,7 +51,7 @@ var clientSocket=require('net').connect('/tmp/AaS.sock',function(){
 // the `AaS` is listening on unix socket `/tmp/AaS.sock` and `AaC` is connecting to it
 ```
 #### Basic routing
-You can also use adapters to create logic routing between internal app functions, without connecting to any socket. This way, you can split the code between multiple micro services (adapters) in the same application for individual maintenance and debugging.
+Adapters can be use to create logic routing between internal app functions, without connecting to any socket. This way, you can split the code between multiple micro services (adapters) in the same application for individual maintenance and debugging.
 ```js
 // object functions for 1st adapter
 var fc1={
@@ -99,7 +99,7 @@ test1 call { '0': [Function: bound ],
 * `body` - Buffer
 * `data` - Object data `adapter.data`
 
-The adapter emit, by default, the event named `err` for errors, to ensure the data flow (non-blocking state). For blocking state (no data flow), you can name it `error` on constructor options `{error:'error'}`, or later `adapter.error='error'`.
+The adapter emit, by default, the event named `err` for errors, to ensure the data flow (non-blocking state). For blocking state (no data flow), name it `error` on constructor options `{error:'error'}`, or later `adapter.error='error'`.
 ```js
 new adapter(functions,{data:'obj',error:'err'})).
 // custom error `err` event, non-blocking mode
