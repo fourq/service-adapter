@@ -33,15 +33,15 @@ var functions={
 	}
 	// ... and so on
 };
-var AaS=new adapter(functions);
-var AaC=new adapter(functions);
 
 // pipe `AaS` into server socket stream `serverSocket`
 require('net').createServer(function(serverSocket){
+	var AaS=new adapter(functions);
 	serverSocket.pipe(AaS).pipe(serverSocket);
 }).listen('/tmp/db.sock');
 
 // pipe `AaC` into client socket stream `clientSocket`
+var AaC=new adapter(functions);
 var clientSocket=require('net').connect('/tmp/db.sock',function(){
 	clientSocket.pipe(AaC).pipe(clientSocket);
 });
