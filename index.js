@@ -2,9 +2,7 @@
 
 'use strict';
 
-var fs=require('fs'),
-inherits=require('util').inherits,
-Transform=require('stream').Transform;
+var inherits=require('util').inherits,Transform=require('stream').Transform;
 
 inherits(adapter,Transform);
 function adapter(functions,options){
