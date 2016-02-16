@@ -9,7 +9,7 @@ Transform=require('stream').Transform;
 inherits(adapter,Transform);
 function adapter(functions,options){
 	if(!(this instanceof adapter)){return new adapter(functions,options);}
-	Transform.call(this,options);
+	Transform.call(this);//,options
 	this._b=0;// private, body length
 	this._h=null;// private, header object
 	this._x=new Buffer(0);// private, empty buffer

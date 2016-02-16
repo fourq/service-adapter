@@ -47,7 +47,6 @@ var AaC=new adapter(functions);
 var clientSocket=require('net').connect('/tmp/AaS.sock',function(){
 	clientSocket.pipe(AaC).pipe(clientSocket);
 });
-
 // the `AaS` is listening on unix socket `/tmp/AaS.sock` and `AaC` is connecting to it
 ```
 #### Basic routing
@@ -63,11 +62,11 @@ var fc1={
 var fc2={
 	test2:function(callback,header,body,data){
 		console.log('test2 call',arguments);
+		// callback function `test1` from `adapter1`
 		callback('test1',header+' back');
 	}
 };
-
-// create the adapter
+// adapters
 var adapter1=new adapter(fc1);
 var adapter2=new adapter(fc2);
 
@@ -112,7 +111,7 @@ on('finish',function(){console.log('adapter onFinish');}).
 on('end',function(){console.log('adapter onEnd');});
 ```
 
-**For more informations consult or run the <a href="https://github.com/RTComm/service-adapter/blob/master/test.js"><b>test.js</b></a> file**
+**For more informations consult or run the <a href="https://github.com/RTComm/service-adapter/blob/master/test.js"><b>test.js</b></a> file.**
 
 --------------------------------------------------------
 **Micro Service Adapter** is licensed under the MIT license. See the included `LICENSE` file for more details.
