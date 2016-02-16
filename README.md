@@ -1,4 +1,7 @@
 ## Micro Service Adapter
+[![NPM](https://nodei.co/npm/service-adapter.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/service-adapter/)
+
+[![Build Status](https://travis-ci.org/RTComm/service-adapter.svg?branch=master)](http://travis-ci.org/RTComm/service-adapter)
 
 **Micro Service Adapter - stream transform protocol for node.js**
 
@@ -33,7 +36,6 @@ var functions={
 	}
 	// ... and so on
 };
-
 // pipe `AaS` into server socket stream `serverSocket`
 require('net').createServer(function(serverSocket){
 	var AaS=new adapter(functions);
