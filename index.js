@@ -72,7 +72,7 @@ adapter.prototype._transform=function(data,enc,cb){
 							this._send(header,left);
 							this._c=this._x;// no extra bytes, empty cache
 						}else{// got extra bytes
-							console.log('XbytesB',i);
+							//console.log('XbytesB',i);
 							c=this._send(header,left.slice(0,header.b));// no cb() run
 							this._c=this._x;// set empty chache
 							this._transform(left.slice(header.b),enc,cb);// parse extra bytes
