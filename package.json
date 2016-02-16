@@ -1,6 +1,6 @@
 {
   "name": "service-adapter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Micro Service Adapter",
   "main": "index.js",
   "scripts": {
@@ -13,13 +13,15 @@
   "keywords": [
     "micro",
     "service",
+    "microservice",
     "adapter",
     "adaptor",
     "server",
     "client",
     "proxy",
     "protocol",
-    "transform"
+    "transform",
+    "stream"
   ],
   "author": "Tanase Laurentiu <expertphp@gmail.com> (http://xpertmailer.com)",
   "license": "MIT",
