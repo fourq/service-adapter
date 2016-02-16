@@ -99,7 +99,7 @@ test1 call { '0': [Function: bound ],
 * `body` - Buffer
 * `data` - Object data `adapter.data`
 
-The adapter emit, by default, the event named `err` for errors, to ensure the data flow (non-blocking state) even if an error occurred. For blocking state (no data flow), you can name it `error` on constructor options `{error:'error'}`, or later `adapter.error='error'`.
+The adapter emit, by default, the event named `err` for errors, to ensure the data flow (non-blocking state). For blocking state (no data flow), you can name it `error` on constructor options `{error:'error'}`, or later `adapter.error='error'`.
 ```js
 new adapter(functions,{data:'obj',error:'err'})).
 // custom error `err` event, non-blocking mode
