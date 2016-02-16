@@ -103,12 +103,8 @@ The adapter emit, by default, the event named `err` for errors, to ensure the da
 new adapter(functions,{data:'obj',error:'err'}).
 // custom error `err` event, non-blocking mode
 on('err',function(e){console.log('adapter onErr',e);}).
-// standard transform stream `error` event, blocking mode
-on('error',function(e){console.log('adapter onError',e);}).
-// standard transform stream `finish` event
-on('finish',function(){console.log('adapter onFinish');}).
-// standard transform stream `end` event
-on('end',function(){console.log('adapter onEnd');});
+// standard error event, blocking mode
+on('error',function(e){console.log('adapter onError',e);});
 ```
 
 **For more informations consult or run the <a href="https://github.com/RTComm/service-adapter/blob/master/test.js"><b>test.js</b></a> file.**
