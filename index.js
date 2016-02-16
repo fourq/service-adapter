@@ -17,6 +17,7 @@ function adapter(functions,options){
 	this._f=functions;// private, functions object
 	this._s=new Buffer('\n');// private, separator
 	this.data=typeof options==='object'&&'data' in options?options.data:undefined;// public, extra data pass
+	this.error=typeof options==='object'&&'error' in options?options.error.toString():'err';// public, error event name
 	this.isOpen=true;// public (read-only), connection status
 }
 
@@ -31,8 +32,8 @@ adapter.prototype._callback=function(f,header,body){
 				if(!Buffer.isBuffer(body)){body=new Buffer(typeof body==='string'?body:body.toString());}
 				this.push(Buffer.concat([new Buffer(JSON.stringify({f:f,h:header,b:body.length})),this._s,body]));
 			}
-		}else{this.emit('error',new Error('invalid callback function name [ '+typeof f+' ]'));}
-	}else{this.emit('error',new Error('callback after end'));}
+		}else{this.emit(this.error,new Error('invalid callback function name [ '+typeof f+' ]'));}
+	}else{this.emit(this.error,new Error('callback after end'));}
 };
 
 adapter.prototype._send=function(header,body){
@@ -41,7 +42,7 @@ adapter.prototype._send=function(header,body){
 		if(!(header.f in this._f)){throw new Error('invalid function call name [ '+header.f+' ]');}
 		this._f[header.f](this._callback.bind(this),header.h,body,this.data);
 	}catch(e){// got error
-		this.emit('error',e);// < this will block the flow, todo: need to unblock
+		this.emit(this.error,e);
 	}
 	return false;
 };
@@ -52,40 +53,50 @@ adapter.prototype._transform=function(data,enc,cb){
 	if(this._b===0){// header
 		var l=this._c.length;
 		this._c=Buffer.concat([this._c,data]);// append data to chache
-		var index=this._c.indexOf(this._s,l>0?l-1:0);// search for separator
+		var index=this._c.indexOf(this._s,l>0?l-1:0);// search for separator, move pointer one byte (separator length) back
 		if(index!==-1){// separator is found
+			var left=this._c.slice(index+1),i=left.length;// extra bytes
 			try{
 				//console.log('parse',this._c.slice(0,index).toString());
 				var header=JSON.parse(this._c.slice(0,index).toString());// deserialize header
 				if('b' in header){// body set
-					var left=this._c.slice(index+1),i=left.length;
 					if(header.b>i){// need more bytes, wait for next call
 						// set init object values
 						this._b=header.b;
 						this._h=header;
 						this._c=left;// set chache
+						//console.log('NbytesB',i);
 					}else{
 						if(header.b===i){// got exact bytes
+							//console.log('0bytesB',i);
 							this._send(header,left);
 							this._c=this._x;// no extra bytes, empty cache
 						}else{// got extra bytes
+							console.log('XbytesB',i);
 							c=this._send(header,left.slice(0,header.b));// no cb() run
 							this._c=this._x;// set empty chache
 							this._transform(left.slice(header.b),enc,cb);// parse extra bytes
 						}
 					}
 				}else{// body is empty
-					c=this._send(header);// no cb() run
-					var extra=this._c.slice(index+1); // extra bytes
 					this._c=this._x;// set empty chache
-					this._transform(extra,enc,cb);// parse extra bytes
+					if(i===0){
+						//console.log('0bytes-',i);
+						this._send(header);
+					}else{
+						//console.log('Xbytes-',i);
+						c=this._send(header);// no cb() run
+						this._transform(left,enc,cb);// parse extra bytes
+					}
 				}
 			}catch(e){// got error
-				this.emit('error',e);// < this will block the flow, todo: need to unblock
-				var extra=this._c.slice(index+1); // extra bytes
+				this.emit(this.error,e);
+				//console.log('-bytesE',i);
 				this._c=this._x;// set empty chache
-				c=false;// no cb() run
-				this._transform(extra,enc,cb);// parse extra bytes
+				if(i>0){
+					c=false;// no cb() run
+					this._transform(left,enc,cb);// parse extra bytes
+				}
 			}
 		}// else, need more bytes, wait for next call
 	}else{// body

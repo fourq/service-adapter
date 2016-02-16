@@ -91,13 +91,15 @@ test1 call { '0': [Function: bound ],
 ```
 ##### Adapter constructor `new adapter (functions, options)`
 * `functions` - Object functions list
-* `options` - Object, `data` key for `adapter.data`
+* `options` - Object {data:Object, error:String}
 
 ##### Function adapter `function (callback, header, body, data)`
 * `callback` - Function, push data
 * `header` - Object
 * `body` - Buffer
 * `data` - Object data `adapter.data`
+
+The adapter emit, by default, the event named `err` for errors, this ensure the data flow (non-blocking state) even if an error occur. For blocking state (no data flow), you can name it `error` on constructor options.
 
 **For more informations consult or run the <a href="https://github.com/RTComm/service-adapter/blob/master/test.js"><b>test.js</b></a> file**
 
