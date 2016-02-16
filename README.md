@@ -91,7 +91,7 @@ test1 call { '0': [Function: bound ],
 ```
 ##### Adapter constructor `new adapter (functions, options)`
 * `functions` - Object functions list
-* `options` - Object {data:Object, error:String}
+* `options` - Object {`data`:Object, `error`:String}
 
 ##### Function adapter `function (callback, header, body, data)`
 * `callback` - Function, push data
