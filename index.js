@@ -50,7 +50,7 @@ adapter.prototype._transform=function(data,enc,cb){
 	//console.log('_transform',data.toString());
 	if(this._b===0){// header
 		var l=this._c.length;
-		this._c=Buffer.concat([this._c,data]);// append data to chache
+		this._c=Buffer.concat([this._c,data]);// append data to cache
 		var index=this._c.indexOf(this._s,l>0?l-1:0);// search for separator, move pointer one byte (separator length) back
 		if(index!==-1){// separator is found
 			var left=this._c.slice(index+1),i=left.length;// extra bytes
@@ -62,7 +62,7 @@ adapter.prototype._transform=function(data,enc,cb){
 						// set init object values
 						this._b=header.b;
 						this._h=header;
-						this._c=left;// set chache
+						this._c=left;// set cache
 						//console.log('NbytesB',i);
 					}else{
 						if(header.b===i){// got exact bytes
@@ -72,12 +72,12 @@ adapter.prototype._transform=function(data,enc,cb){
 						}else{// got extra bytes
 							//console.log('XbytesB',i);
 							c=this._send(header,left.slice(0,header.b));// no cb() run
-							this._c=this._x;// set empty chache
+							this._c=this._x;// set empty cache
 							this._transform(left.slice(header.b),enc,cb);// parse extra bytes
 						}
 					}
 				}else{// body is empty
-					this._c=this._x;// set empty chache
+					this._c=this._x;// set empty cache
 					if(i===0){
 						//console.log('0bytes-',i);
 						this._send(header);
@@ -90,7 +90,7 @@ adapter.prototype._transform=function(data,enc,cb){
 			}catch(e){// got error
 				this.emit(this.error,e);
 				//console.log('-bytesE',i);
-				this._c=this._x;// set empty chache
+				this._c=this._x;// set empty cache
 				if(i>0){
 					c=false;// no cb() run
 					this._transform(left,enc,cb);// parse extra bytes
@@ -100,7 +100,7 @@ adapter.prototype._transform=function(data,enc,cb){
 	}else{// body
 		var i=this._c.length+data.length;
 		if(this._b>i){// need more bytes, wait for next call
-			this._c=Buffer.concat([this._c,data]);// append data to chache
+			this._c=Buffer.concat([this._c,data]);// append data to cache
 		}else{
 			if(this._b===i){// got exact bytes
 				this._send(this._h,Buffer.concat([this._c,data]));
@@ -111,7 +111,7 @@ adapter.prototype._transform=function(data,enc,cb){
 			}else{// got extra bytes
 				var l=this._b-this._c.length;
 				c=this._send(this._h,Buffer.concat([this._c,data.slice(0,l)]));// no cb() run
-				this._c=this._x;// set empty chache
+				this._c=this._x;// set empty cache
 				// reset init object values
 				this._b=0;
 				this._h=null;
