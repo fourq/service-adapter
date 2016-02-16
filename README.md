@@ -25,7 +25,7 @@ HTTP Server          DB Server
   |        ----------    |
   --------> AaS | AaC <---
 ```
-A socket connection can `only` be made between two different socket adapter type, as you can see in the diagram. You can use the same set of `functions` for different adapters, for `Log Server` in diagram above, we can write:
+A socket connection can `only` be made between two different socket adapter type, as you can see in the diagram. You can use the same set of `functions` for different adapters.
 ```js
 var functions={
 	func1:function(callback,header,body,data){
