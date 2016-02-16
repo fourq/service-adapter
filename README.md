@@ -40,15 +40,15 @@ var functions={
 require('net').createServer(function(serverSocket){
 	var AaS=new adapter(functions);
 	serverSocket.pipe(AaS).pipe(serverSocket);
-}).listen('/tmp/db.sock');
+}).listen('/tmp/AaS.sock');
 
 // pipe `AaC` into client socket stream `clientSocket`
 var AaC=new adapter(functions);
-var clientSocket=require('net').connect('/tmp/db.sock',function(){
+var clientSocket=require('net').connect('/tmp/AaS.sock',function(){
 	clientSocket.pipe(AaC).pipe(clientSocket);
 });
 
-// the `AaS` is listening on unix socket `/tmp/db.sock` and `AaC` is connecting to `AaS`
+// the `AaS` is listening on unix socket `/tmp/AaS.sock` and `AaC` is connecting to it
 ```
 #### Basic routing
 You can also use adapters to create logic routing between internal app functions, without connecting to any socket. This way, you can split the code between multiple micro services (adapters) in the same application for individual maintenance and debugging.
