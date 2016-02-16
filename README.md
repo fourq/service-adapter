@@ -20,7 +20,7 @@ var adapter=require('service-adapter');
 HTTP Server          DB Server
 -----------          ---------
  AaC | AaC <----------> AaS
-  ^                   ^
+  ^                      ^
   |        Log Server    |
   |        ----------    |
   --------> AaS | AaC <---
