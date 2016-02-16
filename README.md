@@ -100,6 +100,17 @@ test1 call { '0': [Function: bound ],
 * `data` - Object data `adapter.data`
 
 The adapter emit, by default, the event named `err` for errors, to ensure the data flow (non-blocking state) even if an error occurred. For blocking state (no data flow), you can name it `error` on constructor options `{error:'error'}`, or later `adapter.error='error'`.
+```js
+new adapter(functions,{data:'obj',error:'err'})).
+// custom error `err` event, non-blocking mode
+on('err',function(e){console.log('adapter onErr',e);}).
+// standard transform stream `error` event, blocking mode
+on('error',function(e){console.log('adapter onError',e);}).
+// standard transform stream `finish` event
+on('finish',function(){console.log('adapter onFinish');}).
+// standard transform stream `end` event
+on('end',function(){console.log('adapter onEnd');});
+```
 
 **For more informations consult or run the <a href="https://github.com/RTComm/service-adapter/blob/master/test.js"><b>test.js</b></a> file**
 
