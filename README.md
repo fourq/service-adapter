@@ -62,8 +62,8 @@ var fc1 = {
 var fc2 = {
 	test2:function(next, head, body, data){
 		console.log('test2 call', arguments);
-		// `next` will call function `test1` from `adapter1`
-		// because `adapter1` is next on the pipe, after `adapter2`
+		// `adapter1` is next on the pipe, after `adapter2`
+		// call function `test1` from `adapter1`
 		next('test1', head+' back');
 	}
 };
