@@ -80,6 +80,8 @@ adapter2.exec('test2', 'welcome');
 // `adapter2` is next on the pipe, after `adapter1`
 // call function `test2` from `adapter2`
 adapter1.next('test2', 'welcome');
+
+// `adapter2.exec` has the same effect as `adapter1.next` for the routing logic created
 /*
 Output two times:
 ------
@@ -91,8 +93,6 @@ test1 call { '0': [Function: bound ],
   '1': 'welcome back',
   '2': undefined,
   '3': undefined }
-
-Because, `adapter2.exec` has the same effect as `adapter1.next` for the routing logic created
 */
 ```
 ##### Adapter constructor `new adapter (functions, options)`
