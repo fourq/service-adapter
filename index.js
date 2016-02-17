@@ -51,7 +51,7 @@ adapter.prototype._transform=function(data,enc,cb){
 	//console.log('_transform',data.toString());
 	if(this._b===0){// header
 		var l=this._c.length;
-		this._c=Buffer.concat([this._c,data]);// append data to chache
+		this._c=Buffer.concat([this._c,data]);// append data to cache
 		var index=this._c.indexOf(this._s,l>0?l-1:0);// search for separator
 		if(index!==-1){// separator is found
 			try{
@@ -63,27 +63,26 @@ adapter.prototype._transform=function(data,enc,cb){
 						// set init object values
 						this._b=header.b;
 						this._h=header;
-						this._c=left;// set chache
+						this._c=left;// set cache
 					}else{
 						if(header.b===i){// got exact bytes
 							this._send(header,left);
-							this._c=this._x;// no extra bytes, empty cache
 						}else{// got extra bytes
 							c=this._send(header,left.slice(0,header.b));// no cb() run
-							this._c=this._x;// set empty chache
 							this._transform(left.slice(header.b),enc,cb);// parse extra bytes
 						}
+						this._c=this._x;// no extra bytes, empty cache
 					}
 				}else{// body is empty
 					c=this._send(header);// no cb() run
 					var extra=this._c.slice(index+1); // extra bytes
-					this._c=this._x;// set empty chache
+					this._c=this._x;// set empty cache
 					this._transform(extra,enc,cb);// parse extra bytes
 				}
 			}catch(e){// got error
 				this.emit('error',e);// < this will block the flow, todo: need to unblock
 				var extra=this._c.slice(index+1); // extra bytes
-				this._c=this._x;// set empty chache
+				this._c=this._x;// set empty cache
 				c=false;// no cb() run
 				this._transform(extra,enc,cb);// parse extra bytes
 			}
@@ -91,23 +90,19 @@ adapter.prototype._transform=function(data,enc,cb){
 	}else{// body
 		var i=this._c.length+data.length;
 		if(this._b>i){// need more bytes, wait for next call
-			this._c=Buffer.concat([this._c,data]);// append data to chache
+			this._c=Buffer.concat([this._c,data]);// append data to cache
 		}else{
 			if(this._b===i){// got exact bytes
 				this._send(this._h,Buffer.concat([this._c,data]));
-				this._c=this._x;// no extra bytes, empty cache
-				// reset init object values
-				this._b=0;
-				this._h=null;
 			}else{// got extra bytes
 				var l=this._b-this._c.length;
 				c=this._send(this._h,Buffer.concat([this._c,data.slice(0,l)]));// no cb() run
-				this._c=this._x;// set empty chache
-				// reset init object values
-				this._b=0;
-				this._h=null;
 				this._transform(data.slice(l),enc,cb);// parse extra bytes
 			}
+			this._c=this._x;// set empty cache
+			// reset init object values
+			this._b=0;
+			this._h=null;
 		}
 	}
 	if(c){cb();}
