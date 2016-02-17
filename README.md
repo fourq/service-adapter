@@ -78,7 +78,7 @@ adapter1.pipe(adapter2).pipe(adapter1);
 adapter2.exec('test2', 'welcome');
 
 // `adapter2` is next on the pipe, after `adapter1`
-// `adapter1.next` will call function `test2` from `adapter2`
+// call function `test2` from `adapter2`
 adapter1.next('test2', 'welcome');
 /*
 Output two times:
