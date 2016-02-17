@@ -49,8 +49,8 @@ var clientSocket = require('net').connect('/tmp/AaS.sock', function(){
 });
 // the `AaS` is listening on unix socket `/tmp/AaS.sock` and `AaC` is connecting to it
 ```
-#### Basic routing
-Adapters can be use to create logic routing between internal app functions, without connecting to any socket. This way, you can split the code between multiple micro services (adapters) in the same application for individual maintenance and debugging.
+#### Basic router
+Adapters can be use to create logic router between internal app functions, without connecting to any socket. This way, you can split the code between multiple micro services (adapters) in the same application for individual maintenance and debugging.
 ```js
 // object functions for adapter1
 var fc1 = {
@@ -71,7 +71,7 @@ var fc2 = {
 var adapter1 = new adapter(fc1);
 var adapter2 = new adapter(fc2);
 
-// create the routing (data flow) logic
+// create a router, data flow logic
 adapter1.pipe(adapter2).pipe(adapter1);
 
 // call function `test2` from `adapter2`
@@ -81,7 +81,7 @@ adapter2.exec('test2', 'welcome');
 // call function `test2` from `adapter2`
 adapter1.next('test2', 'welcome');
 
-// `adapter2.exec` has the same effect as `adapter1.next` for the routing logic created
+// `adapter2.exec` has the same effect as `adapter1.next` for the router created
 /*
 Output two times:
 ------
