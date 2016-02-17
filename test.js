@@ -62,7 +62,7 @@ try{
 require('net').createServer(function(serverSocket){
 	console.log('s onConnect');
 	serverSocket.pipe(adapter1).pipe(serverSocket);
-	//adapter1._callback('test2','welcome');
+	//adapter1.next('test2','welcome');
 }).listen(sock);
 
 // pipe `adapter2` into client socket stream `clientSocket`
