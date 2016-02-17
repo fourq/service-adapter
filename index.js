@@ -9,7 +9,7 @@ function adapter(functions,options){
 	if(!(this instanceof adapter)){return new adapter(functions,options);}
 	Transform.call(this);//,options
 	this._b=0;// private, body length
-	this._h=null;// private, header object
+	this._h=null;// private, head object
 	this._x=new Buffer(0);// private, empty buffer
 	this._c=this._x;// private, cache buffer
 	this._f=functions;// private, functions object
@@ -19,36 +19,44 @@ function adapter(functions,options){
 	this.isOpen=true;// public (read-only), connection status
 }
 
-adapter.prototype._callback=function(f,header,body){
-	//console.log('push',this.isOpen,f,header,body);
+adapter.prototype.next=function(f,head,body){
+	//console.log('push',this.isOpen,f,head,body);
 	if(this.isOpen){
 		if(typeof f==='string'){
 			// only one push, do not split data !
 			if(body===undefined||body===null){
-				this.push(Buffer.concat([new Buffer(JSON.stringify({f:f,h:header})),this._s]));
+				this.push(Buffer.concat([new Buffer(JSON.stringify({f:f,h:head})),this._s]));
 			}else{
 				if(!Buffer.isBuffer(body)){body=new Buffer(typeof body==='string'?body:body.toString());}
-				this.push(Buffer.concat([new Buffer(JSON.stringify({f:f,h:header,b:body.length})),this._s,body]));
+				this.push(Buffer.concat([new Buffer(JSON.stringify({f:f,h:head,b:body.length})),this._s,body]));
 			}
-		}else{this.emit(this.error,new Error('invalid callback function name [ '+typeof f+' ]'));}
-	}else{this.emit(this.error,new Error('callback after end'));}
+		}else{this.emit(this.error,new Error('next() invalid function name'));}
+	}else{this.emit(this.error,new Error('next() after end'));}
 };
+adapter.prototype._callback=adapter.prototype.next;
 
-adapter.prototype._send=function(header,body){
+adapter.prototype._send=function(head,body){
 	try{
-		if(!('f' in header)){throw new Error('function call name not found');}
-		if(!(header.f in this._f)){throw new Error('invalid function call name [ '+header.f+' ]');}
-		this._f[header.f](this._callback.bind(this),header.h,body,this.data);
+		if(!('f' in head)){throw new Error('_send() function not found');}
+		if(!(head.f in this._f)){throw new Error('_send() invalid function name [ '+head.f+' ]');}
+		this._f[head.f](this.next.bind(this),head.h,body,this.data);
 	}catch(e){// got error
 		this.emit(this.error,e);
 	}
 	return false;
 };
+adapter.prototype.exec=function(f,head,body){
+	if(typeof f==='string'){
+		if(f in this._f){
+			this._f[f](this.next.bind(this),head,body,this.data);
+		}else{this.emit(this.error,new Error('exec() invalid function name [ '+f+' ]'));}
+	}else{this.emit(this.error,new Error('exec() function not found'));}
+};
 
 adapter.prototype._transform=function(data,enc,cb){
 	var c=true;// default, run cb()
 	//console.log('_transform',data.toString());
-	if(this._b===0){// header
+	if(this._b===0){// head
 		var l=this._c.length;
 		this._c=Buffer.concat([this._c,data]);// append data to cache
 		var index=this._c.indexOf(this._s,l>0?l-1:0);// search for separator, move pointer one byte (separator length) back
@@ -56,34 +64,34 @@ adapter.prototype._transform=function(data,enc,cb){
 			var left=this._c.slice(index+1),i=left.length;// extra bytes
 			try{
 				//console.log('parse',this._c.slice(0,index).toString());
-				var header=JSON.parse(this._c.slice(0,index).toString());// deserialize header
-				if('b' in header){// body set
-					if(header.b>i){// need more bytes, wait for next call
+				var head=JSON.parse(this._c.slice(0,index).toString());// deserialize head
+				if('b' in head){// body set
+					if(head.b>i){// need more bytes, wait for next call
 						// set init object values
-						this._b=header.b;
-						this._h=header;
+						this._b=head.b;
+						this._h=head;
 						this._c=left;// set cache
 						//console.log('NbytesB',i);
 					}else{
-						if(header.b===i){// got exact bytes
+						if(head.b===i){// got exact bytes
 							//console.log('0bytesB',i);
-							this._send(header,left);
+							this._send(head,left);
 							this._c=this._x;// no extra bytes, empty cache
 						}else{// got extra bytes
 							//console.log('XbytesB',i);
-							c=this._send(header,left.slice(0,header.b));// no cb() run
+							c=this._send(head,left.slice(0,head.b));// no cb() run
 							this._c=this._x;// set empty cache
-							this._transform(left.slice(header.b),enc,cb);// parse extra bytes
+							this._transform(left.slice(head.b),enc,cb);// parse extra bytes
 						}
 					}
 				}else{// body is empty
 					this._c=this._x;// set empty cache
 					if(i===0){
 						//console.log('0bytes-',i);
-						this._send(header);
+						this._send(head);
 					}else{
 						//console.log('Xbytes-',i);
-						c=this._send(header);// no cb() run
+						c=this._send(head);// no cb() run
 						this._transform(left,enc,cb);// parse extra bytes
 					}
 				}

@@ -2,6 +2,7 @@
 
 var adapter=require('./index.js');
 
+/*
 var inherits=require('util').inherits,Readable=require('stream').Readable;
 
 inherits(readStream,Readable);
@@ -28,36 +29,29 @@ new readStream().
 		on('error',function(e){console.log('adapter onError',e);}).
 		on('finish',function(){console.log('adapter onFinish');}).
 		on('end',function(){console.log('adapter onEnd');});
+*/
 
-/*
 
-// object functions for 1st adapter
-var fc1={
-	test1:function(callback,header,body,data){
-		console.log('test1 call',header);//,arguments
-		callback('test2',header+' pong');
+var fc1 = {
+	test1:function(next, head, body, data){
+		console.log('test1 call', arguments);
 	}
 };
-// object functions for 2nd adapter
-var fc2={
-	test2:function(callback,header,body,data){
-		console.log('test2 call',header);//,arguments
-		//callback('test1',header+' back');
-		data.writeHead(200,{'Content-Type':'text/plain'});
-		data.end(header);
+var fc2 = {
+	test2:function(next, head, body, data){
+		console.log('test2 call', arguments);
+		next('test1', head+' back');
 	}
 };
-
-// create the adapter
-var adapter1=new adapter(fc1);
-var adapter2=new adapter(fc2);
-
+var adapter1 = new adapter(fc1);
+var adapter2 = new adapter(fc2);
 
 adapter1.pipe(adapter2).pipe(adapter1);
-// send some data into the flow
-adapter1._callback('test2','welcome');
 
+adapter2.exec('test2', 'welcome');
+adapter1.next('test2', 'welcome');
 
+/*
 var sock='/tmp/db.sock',fs=require('fs');
 try{
 	var stats=fs.lstatSync(sock);
@@ -82,7 +76,7 @@ function startHttpServer(adapter2){
 	require('http').createServer(function(req,res){
 		console.log('http client connect');
 		adapter2.data=res;
-		adapter2._callback('test1','ping');
+		adapter2.next('test1','ping');
 	}).listen(80,'192.168.56.101');
 }
 */
