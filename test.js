@@ -61,12 +61,14 @@ try{
 // pipe `adapter1` into server socket stream `serverSocket`
 require('net').createServer(function(serverSocket){
 	console.log('s onConnect');
+	var adapter1 = new adapter(fc1);
 	serverSocket.pipe(adapter1).pipe(serverSocket);
 	//adapter1.next('test2','welcome');
 }).listen(sock);
 
 // pipe `adapter2` into client socket stream `clientSocket`
-var clientSocket=require('net').connect(sock,function(){
+var adapter2 = new adapter(fc2);
+var clientSocket = require('net').connect(sock,function(){
 	console.log('c onConnect');
 	clientSocket.pipe(adapter2).pipe(clientSocket);
 	startHttpServer(adapter2);
