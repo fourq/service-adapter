@@ -33,7 +33,7 @@ adapter.prototype.next=function(f,head,body){
 		}else{this.emit(this.error,new Error('next() invalid function name'));}
 	}else{this.emit(this.error,new Error('next() after end'));}
 };
-adapter.prototype._callback=adapter.prototype.next;
+adapter.prototype._callback=adapter.prototype.next;// deprecate
 
 adapter.prototype._send=function(head,body){
 	try{
